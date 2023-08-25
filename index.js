@@ -23,9 +23,6 @@ let activeSlidesIndex = Array(ITEM_PER_SLIDE)
 let nextActive = ITEM_PER_SLIDE
 let prevActive = slidesList.length - 1
 
-let afterNext = ITEM_PER_SLIDE + 1
-let beforePrev = slidesList.length - 2
-
 let isAnimationEnded = true
 let slideWidth = 0
 
@@ -97,9 +94,8 @@ function updateSlider(activeSlides) {
     prevActive = checkActive(activeSlides[0] - 1)
     nextActive = checkActive(activeSlides[activeSlides.length - 1] + 1)
 
-    activeSlides.forEach((index, order) => {
+    activeSlides.forEach(index => {
         slides[index].classList.add('show')
-        slides[index].style.order = order + 2
     })
 
     addNext()
@@ -110,9 +106,6 @@ function updateSlider(activeSlides) {
 function removePrev() {
     slides[prevActive].classList.remove('show_prev')
     slides[nextActive].classList.remove('show_next')
-
-    slides[prevActive].style.removeProperty('order')
-    slides[nextActive].style.removeProperty('order')
 }
 
 function addNext() {
@@ -121,9 +114,6 @@ function addNext() {
 
     slides[prevActive].classList.add('show_prev')
     slides[nextActive].classList.add('show_next')
-
-    slides[prevActive].style.order = 1
-    slides[nextActive].style.order = SLIDER_COLUMNS
 }
 
 function prepareSecCards() {
