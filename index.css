@@ -3,6 +3,7 @@
     width: 1200px;
     height: 300px;
     background-color: rgba(0, 0, 0, 0.5);
+    user-select: none;
 }
 
 .slider_holder {
@@ -36,7 +37,6 @@
     display: flex;
 }
 
-.slide.show_prev,
 .slide.show_next {
     display: flex;
     opacity: 0.5;
@@ -65,4 +65,10 @@
     border: 1px solid;
     pointer-events: all;
     box-sizing: border-box;
+    transition: opacity 0.3s;
+}
+
+.nav_btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
 }

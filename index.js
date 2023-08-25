@@ -1,30 +1,26 @@
-// TODO: add loop rotate disable
+// params
+const SLIDER_COLUMNS = 3
+const LOOP_ROTATE = true
 
 // elements
-const sliderHolder = document.querySelector('.slider_holder')
 const sliderElem = document.querySelector('.slider')
 const prevBtn = document.querySelector('.nav_btn_prev')
 const nextBtn = document.querySelector('.nav_btn_next')
 
-// params
-const ITEM_PER_SLIDE = 3
-const SLIDER_ANIMATION_TIME = 1000
-const SLIDER_COLUMNS = ITEM_PER_SLIDE + 2
+// variables
+const slidesList = [1, 2, 3, 4]
+const slides = []
 const SLIDER_GAP = parseFloat(window.getComputedStyle(sliderElem).gap)
 
-// variables
-const slidesList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-const slides = []
-
-let activeSlidesIndex = Array(ITEM_PER_SLIDE)
+let activeSlidesIndex = Array(SLIDER_COLUMNS)
     .fill()
     .map((_, index) => index)
 
-let nextActive = ITEM_PER_SLIDE
-let prevActive = slidesList.length - 1
-
 let isAnimationEnded = true
 let slideWidth = 0
+
+let nextSlide = SLIDER_COLUMNS
+let prevSlide = 0
 
 // events
 prevBtn.addEventListener('click', prev)
@@ -34,11 +30,11 @@ nextBtn.addEventListener('click', next)
 addSlides()
 updateSlider(activeSlidesIndex)
 slideWidth = slides[0].clientWidth + SLIDER_GAP
-prepareSecCards()
+if (!LOOP_ROTATE) prevBtn.classList.add('disabled')
 
 // functions
 function addSlides() {
-    sliderElem.style.gridTemplateColumns = `repeat(${ITEM_PER_SLIDE}, 1fr)`
+    sliderElem.style.gridTemplateColumns = `repeat(${SLIDER_COLUMNS}, 1fr)`
 
     slidesList.forEach((slideItem, index) => {
         const slide = document.createElement('div')
@@ -54,11 +50,14 @@ function next() {
     if (!isAnimationEnded) return
     isAnimationEnded = false
 
+    nextSlide = checkActive(activeSlidesIndex[activeSlidesIndex.length - 1] + 1, !LOOP_ROTATE)
+    prevSlide = checkActive(activeSlidesIndex[0])
+
     sliderElem.classList.add('next_anim', 'move_animation')
     activeSlidesIndex = activeSlidesIndex.map(index => checkActive(++index))
 
     sliderElem.style.transform = `translateX(-${slideWidth}px)`
-    prepareSecCards()
+    prepareSecCards('right')
 
     sliderElem.addEventListener('transitionend', () => {
         sliderElem.classList.remove('next_anim', 'move_animation')
@@ -72,11 +71,14 @@ function prev() {
     if (!isAnimationEnded) return
     isAnimationEnded = false
 
+    nextSlide = checkActive(activeSlidesIndex[0] - 1, !LOOP_ROTATE)
+    prevSlide = checkActive(activeSlidesIndex[activeSlidesIndex.length - 1])
+
     sliderElem.classList.add('prev_anim', 'move_animation')
     activeSlidesIndex = activeSlidesIndex.map(index => checkActive(--index))
 
     sliderElem.style.transform = `translateX(${slideWidth}px)`
-    prepareSecCards()
+    prepareSecCards('left')
 
     sliderElem.addEventListener('transitionend', () => {
         sliderElem.classList.remove('prev_anim', 'move_animation')
@@ -87,51 +89,46 @@ function prev() {
 }
 
 function updateSlider(activeSlides) {
-    resetSecCards()
+    if (SLIDER_COLUMNS >= slidesList.length) {
+        nextBtn.classList.add('disabled')
+        prevBtn.classList.add('disabled')
+    } else {
+        resetSecCards()
+    }
 
-    removePrev()
-
-    prevActive = checkActive(activeSlides[0] - 1)
-    nextActive = checkActive(activeSlides[activeSlides.length - 1] + 1)
-
-    activeSlides.forEach(index => {
+    activeSlides.forEach((index, order) => {
+        if (!slides[index]) return
         slides[index].classList.add('show')
+        slides[index].style.order = order + 1
     })
 
-    addNext()
-    prepareSecCards()
     isAnimationEnded = true
 }
 
-function removePrev() {
-    slides[prevActive].classList.remove('show_prev')
-    slides[nextActive].classList.remove('show_next')
-}
-
-function addNext() {
-    slides[prevActive].classList.remove('show')
-    slides[nextActive].classList.remove('show')
-
-    slides[prevActive].classList.add('show_prev')
-    slides[nextActive].classList.add('show_next')
-}
-
-function prepareSecCards() {
-    slides[prevActive].style.width = `${slideWidth - SLIDER_GAP}px`
-    slides[nextActive].style.width = `${slideWidth - SLIDER_GAP}px`
-
-    slides[prevActive].style.left = `-${slideWidth}px`
-    slides[nextActive].style.right = `-${slideWidth}px`
+function prepareSecCards(side) {
+    slides[nextSlide].classList.add('show_next')
+    slides[nextSlide].style.width = `${slideWidth - SLIDER_GAP}px`
+    slides[nextSlide].style[side] = `-${slideWidth}px`
 }
 
 function resetSecCards() {
-    slides[prevActive].style.removeProperty('width')
-    slides[nextActive].style.removeProperty('width')
+    slides[prevSlide].classList.remove('show')
+    slides[nextSlide].classList.remove('show', 'show_next')
 
-    slides[prevActive].style.removeProperty('left')
-    slides[nextActive].style.removeProperty('right')
+    slides[nextSlide].style.removeProperty('width')
+    slides[nextSlide].style.removeProperty('right')
+    slides[nextSlide].style.removeProperty('left')
+
+    slides[prevSlide].style.removeProperty('order')
 }
 
-function checkActive(index) {
+function checkActive(index, checkOnLoopRotate) {
+    if (checkOnLoopRotate) {
+        index >= slides.length - 1
+            ? nextBtn.classList.add('disabled')
+            : nextBtn.classList.remove('disabled')
+        index <= 0 ? prevBtn.classList.add('disabled') : prevBtn.classList.remove('disabled')
+    }
+
     return index > slides.length - 1 ? 0 : index < 0 ? slides.length - 1 : index
 }
