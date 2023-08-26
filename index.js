@@ -1,7 +1,7 @@
 // params
 const SLIDER_COLUMNS = 3
 const LOOP_ROTATE = true
-const SHOW_THUMBS = false
+const SHOW_THUMBS = true
 
 // elements
 const sliderWrapper = document.querySelector('.slider_wrapper')
@@ -10,20 +10,13 @@ const prevBtn = document.querySelector('.nav_btn_prev')
 const nextBtn = document.querySelector('.nav_btn_next')
 const thumbsWrapper = document.createElement('div')
 
-if (SHOW_THUMBS) {
-    thumbsWrapper.classList.add('thumbs')
-    sliderWrapper.appendChild(thumbsWrapper)
-}
-
 // variables
 const slidesList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const slides = []
 const thumbs = []
 const SLIDER_GAP = parseFloat(window.getComputedStyle(sliderElem).gap)
 
-let activeSlidesIndex = Array(SLIDER_COLUMNS)
-    .fill()
-    .map((_, index) => index)
+let activeSlidesIndex = Array(SLIDER_COLUMNS).fill().map((_, index) => index)
 
 let isAnimationEnded = true
 let slideWidth = 0
@@ -34,6 +27,11 @@ let prevSlide = 0
 // events
 prevBtn.addEventListener('click', prev)
 nextBtn.addEventListener('click', next)
+
+if (SHOW_THUMBS && SLIDER_COLUMNS < slidesList.length) {
+    thumbsWrapper.classList.add('thumbs')
+    sliderWrapper.appendChild(thumbsWrapper)
+}
 
 // init slider
 addSlides()
@@ -53,7 +51,7 @@ function addSlides() {
 
         slides.push(slide)
 
-        if (SHOW_THUMBS) {
+        if (SHOW_THUMBS && SLIDER_COLUMNS < slidesList.length) {
             const thumb = document.createElement('div')
             thumb.classList.add('thumb', `thumb-${index}`)
             thumbsWrapper.appendChild(thumb)
@@ -115,7 +113,7 @@ function updateSlider(activeSlides) {
 
     activeSlides.forEach((index, order) => {
         if (!slides[index]) return
-        if (SHOW_THUMBS) thumbs[index].classList.add('active')
+        if (SHOW_THUMBS && SLIDER_COLUMNS < slidesList.length) thumbs[index].classList.add('active')
         slides[index].classList.add('show')
         slides[index].style.order = order + 1
     })
@@ -130,7 +128,8 @@ function prepareNextSlide(side) {
 }
 
 function resetNextSlide() {
-    if (SHOW_THUMBS) thumbs[prevSlide].classList.remove('active')
+    if (SHOW_THUMBS && SLIDER_COLUMNS < slidesList.length)
+        thumbs[prevSlide].classList.remove('active')
 
     slides[prevSlide].classList.remove('show')
     slides[nextSlide].classList.remove('show', 'show_next')
