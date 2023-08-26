@@ -18,6 +18,9 @@ const SLIDER_GAP = parseFloat(window.getComputedStyle(sliderElem).gap)
 
 let activeSlidesIndex = Array(SLIDER_COLUMNS).fill().map((_, index) => index)
 
+let isPossibleToLeft = true
+let isPossibleToRight = LOOP_ROTATE ? true : false
+
 let isAnimationEnded = true
 let slideWidth = 0
 
@@ -62,7 +65,7 @@ function addSlides() {
 }
 
 function next() {
-    if (!isAnimationEnded) return
+    if (!isAnimationEnded || !isPossibleToLeft) return
     isAnimationEnded = false
 
     nextSlide = checkActive(activeSlidesIndex[activeSlidesIndex.length - 1] + 1, !LOOP_ROTATE)
@@ -83,7 +86,7 @@ function next() {
 }
 
 function prev() {
-    if (!isAnimationEnded) return
+    if (!isAnimationEnded || !isPossibleToRight) return
     isAnimationEnded = false
 
     nextSlide = checkActive(activeSlidesIndex[0] - 1, !LOOP_ROTATE)
@@ -143,10 +146,15 @@ function resetNextSlide() {
 
 function checkActive(index, checkOnLoopRotate) {
     if (checkOnLoopRotate) {
+        isPossibleToLeft = true
+        isPossibleToRight = true
+
         index >= slides.length - 1
-            ? nextBtn.classList.add('disabled')
+            ? nextBtn.classList.add('disabled') & (isPossibleToLeft = false)
             : nextBtn.classList.remove('disabled')
-        index <= 0 ? prevBtn.classList.add('disabled') : prevBtn.classList.remove('disabled')
+        index <= 0
+            ? prevBtn.classList.add('disabled') & (isPossibleToRight = false)
+            : prevBtn.classList.remove('disabled')
     }
 
     return index > slides.length - 1 ? 0 : index < 0 ? slides.length - 1 : index
