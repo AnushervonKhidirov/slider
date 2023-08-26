@@ -1,5 +1,5 @@
 .slider_wrapper {
-    --slide_transition: 0.5s;
+    --slide_transition: .5s;
     position: relative;
     width: 1200px;
     height: 300px;
