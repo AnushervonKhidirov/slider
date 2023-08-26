@@ -1,4 +1,5 @@
 .slider_wrapper {
+    --slide_transition: 0.5s;
     position: relative;
     width: 1200px;
     height: 300px;
@@ -8,29 +9,29 @@
 
 .slider_holder {
     position: absolute;
+    inset: 20px 100px;
     overflow: hidden;
     box-sizing: border-box;
-    inset: 20px 100px;
 }
 
 .slider {
-    display: grid;
     position: absolute;
-    height: 100%;
+    display: grid;
     width: 100%;
+    height: 100%;
     gap: 10px;
 }
 
 .slide {
+    display: none;
     width: 100%;
     height: 100%;
-    background-color: #fff;
-    display: none;
-    align-items: center;
-    box-sizing: border-box;
     justify-content: center;
+    align-items: center;
+    background-color: #fff;
     font-size: 50px;
     font-weight: 700;
+    box-sizing: border-box;
 }
 
 .slide.show {
@@ -38,13 +39,39 @@
 }
 
 .slide.show_next {
+    position: absolute;
     display: flex;
     opacity: 0.5;
-    position: absolute;
 }
 
 .move_animation {
-    transition: transform 0.5s;
+    transition: transform var(--slide_transition);
+}
+
+/* thumbs */
+.thumbs {
+    position: absolute;
+    bottom: 0;
+    display: grid;
+    width: 100%;
+    height: 20px;
+    justify-content: center;
+    gap: 5px;
+    padding: 5px;
+    box-sizing: border-box;
+    grid-auto-flow: column;
+    grid-auto-columns: min-content;
+}
+
+.thumb {
+    width: 10px;
+    background-color: #fff;
+    border-radius: 100px;
+    transition: width var(--slide_transition);
+}
+
+.thumb.active {
+    width: 20px;
 }
 
 /* navigation */
@@ -52,23 +79,26 @@
     position: absolute;
     inset: 0;
     display: flex;
+    justify-content: space-between;
     align-items: center;
     pointer-events: none;
-    justify-content: space-between;
 }
 
 .nav_btn {
-    cursor: pointer;
-    font-size: 20px;
-    margin: 10px;
-    padding: 5px;
-    border: 1px solid;
-    pointer-events: all;
+    width: 50px;
+    height: 100px;
     box-sizing: border-box;
+    cursor: pointer;
+    pointer-events: all;
     transition: opacity 0.3s;
 }
 
 .nav_btn.disabled {
     opacity: 0.5;
     pointer-events: none;
+}
+
+.nav_btn svg {
+    width: 100%;
+    height: 100%;
 }
